@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>自定义Promise_使用测试</title>
+</head>
+
+<body>
+  <script src="./lib/Promise.js"></script>
+  <script>
+    const p = new Promise((resolve, reject) => {
+      // throw new Error('---')
+      
+      setTimeout(() => {
+        if (Date.now()%2===0) {
+          resolve('成功的数据')
+        } else {
+          reject('失败的数据')
+        }
+      }, 1000);
+    })
+    console.log(p)
+    p.then(
+      value => {
+        console.log('onResolved()1', value)
+      },
+      reason => {
+        console.log('onRejected()1', reason)
+      }
+    )
+    p.then(
+      value => {
+        console.log('onResolved()2', value)
+      },
+      reason => {
+        console.log('onRejected()2', reason)
+      }
+    )
+  </script>
+
+</body>
+</html>
