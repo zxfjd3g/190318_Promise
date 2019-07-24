@@ -68,10 +68,63 @@ Promise构造函数模块
   用来指定成功和失败回调函数的方法
   */
   Promise.prototype.then = function (onResolved, onRejected) {
-    this.callbacks.push({
-      onResolved,
-      onRejected
+    const self = this
+
+    return new Promise((resolve, reject) => {
+
+      /* 
+      调用传入的成功/失败的回调, 执行后根据结果来确定返回的promise的结果
+      */
+      function handle(callback) {
+        try {
+          const result = callback(self.data)
+          // result是promise
+          if (result instanceof Promise) { // result的结果决定返回的promise的结果
+            /* 
+            result.then(
+              value => { // 如果result成功了, 返回promise也成功, 值就是接收的value
+                resolve(value)
+              },
+              reason => { // 如果result失败了, 返回promise也失败, 值就是接收的reason
+                reject(reason)
+              }
+            ) */
+            result.then(resolve, reject)
+          } else { // result不是promise
+            resolve(result)
+          }
+        } catch (error) {
+          reject(error)
+        }
+      }
+
+
+      if (self.status === 'resolved') { // 已经成功了
+        // 进行成功的异步进行处理
+        setTimeout(() => {
+          handle(onResolved)
+        }, 0)
+
+      } else if (self.status === 'rejected') { // 已经失败了
+        // 进行失败的异步进行处理
+        setTimeout(() => {
+          handle(onRejected)
+        }, 0)
+      } else { // pending 还未确定
+        // 向promise中的callbacks中保存2个待执行的回调函数
+        this.callbacks.push({
+          onResolved: (value) => {
+             // 进行成功处理
+            handle(onResolved)
+          },
+          onRejected: (reason) => {
+            // 进行失败处理
+            handle(onRejected)
+          }
+        })
+      }
     })
+    
   }
   /* 
   用来指定失败回调函数的方法
