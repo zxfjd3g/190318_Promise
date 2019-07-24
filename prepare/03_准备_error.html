@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+
+  <!-- 
+    目标: 进一步理解JS中的错误(Error)和错误处理
+    mdn文档: https: //developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Error
+
+    1. 错误的类型
+        Error: 所有错误的父类型
+        ReferenceError: 引用的变量不存在
+        TypeError: 数据类型不正确的错误
+        RangeError: 数据值不在其所允许的范围内
+        SyntaxError: 语法错误
+    2. 错误处理
+        捕获错误: try ... catch
+        抛出错误: throw error
+    3. 错误对象
+        message属性: 错误相关信息
+        stack属性: 函数调用栈记录信息
+   -->
+  <script>
+    /*
+      1. 常见的异常错误
+    */
+
+    // 1). ReferenceError: 引用的变量不存在
+    // console.log(a) // ReferenceError: a is not defined
+
+    // 2). TypeError: 数据类型不正确的错误
+    let b = null
+    // console.log(b.xxx) // TypeError: Cannot read property 'xxx' of null
+
+    // 3). RangeError: 数据值不在其所允许的范围内
+    function fn() {
+      fn()
+    }
+    // fn() // RangeError: Maximum call stack size exceeded 超过最大调用堆栈大小
+
+    // 4). SyntaxError: 语法错误
+    // let c = """" // SyntaxError: Unexpected string
+
+
+    /* 
+    2. 错误处理
+    */
+   
+    // 1). 捕获错误: try...catch
+    try {
+      let b = null
+      console.log(b.xxx)
+    } catch (error) {
+      debugger
+      console.log('出错了: ', error.message)
+      console.log(error.stack)
+    }
+    console.log('捕获错误后还可以向下执行')
+   
+    // 2). 抛出错误: throw error
+    function handle() {
+      if (Date.now()%2===0) {
+        throw new Error('不能在时间为偶数时处理...')
+      } else {
+        console.log('时间为奇数, 可以处理...')
+      }
+    }
+
+    try {
+      handle()
+    } catch (error) {
+      console.log('执行出错: ', error.message)
+    }
+  </script>
+</body>
+</html>
