@@ -37,7 +37,7 @@
     )
   </script>
  -->
-
+<!-- 
  <script>
     new Promise((resolve, reject) => { // 在Promise内部会同步执行executor函数
       resolve(1)
@@ -57,13 +57,47 @@
         console.log('onRejected()', reason)
       },
     ).then(
-      value => {
-        console.log('onResolved()2', value)
-      },
+      null,
       reason => {
         console.log('onRejected()2', reason)
       }
-    )
+    ).then(
+      value => {
+        console.log('onResolved()3')
+        throw new Error('xxxxx')
+      }
+    ).then(value => {
+      console.log('onResolved()4')
+    }).then(value => {
+      console.log('onResolved()5')
+    }).catch(reason => {
+      console.log('失败了', reason)
+    }).then(
+      value => {
+        console.log('onResolved()6')
+        return new Promise(() => {})  // 返回的是永远是pending的promise, 整个链式调用在此中断
+      },
+      reason => {
+        console.log('onRejected()6')
+      }
+    ).then(value => {
+      console.log('onResolved()7')
+    }).then(value => {
+      console.log('onResolved()8')
+    })
+
+    /* 
+    promise错误透传
+    中断promise链
+    */
+
+ </script> -->
+
+ <script>
+   const p1 = Promise.resolve(3)
+   const p2 = Promise.resolve(Promise.reject(5))
+   const p3 = Promise.reject(6)
+   console.log(p1, p2, p3)
  </script>
 </body>
 </html>

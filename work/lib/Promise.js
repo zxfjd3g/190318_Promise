@@ -67,7 +67,7 @@ Promise构造函数模块
   /* 
   用来指定成功和失败回调函数的方法
   */
-  Promise.prototype.then = function (onResolved, onRejected) {
+  Promise.prototype.then2 = function (onResolved, onRejected) {
     const self = this
 
     return new Promise((resolve, reject) => {
@@ -126,25 +126,92 @@ Promise构造函数模块
     })
     
   }
+
+  /* 
+  1. 用来指定成功和失败回调函数的方法
+  2. 返回一个新的promise, 这个promise由成功或者失败回调执行的结果来决定
+  */
+  Promise.prototype.then = function (onResolved, onRejected) {
+    const self = this
+
+    // 指定 onResolved 与 onRejected的默认值
+    onResolved = typeof onResolved === 'function' ? onResolved : value => value  // 让返回promise成功, 值是value
+    onRejected = typeof onRejected === 'function' ? onRejected : reason => {throw reason} // 让返回promise失败, 值为reason
+
+    return new Promise((resolve, reject) => {
+      
+      function handle(callback) {
+        try {
+          const result = callback(self.data)
+          if (result instanceof Promise) { // result的结果决定返回的promsie的结果
+            result.then(
+              value => {
+                resolve(value)
+              },
+              reason => {
+                reject(reason)
+              }
+            )
+            // result.then(resolve, reject)
+          } else {
+            resolve(result)
+          }
+        } catch (error) {
+          reject(error)
+        }
+      }
+
+      if (self.status === 'resolved') { // 如果当前promise已经成功
+
+        setTimeout(() => {
+          handle(onResolved)
+        }, 0)
+
+      } else if (self.status === 'rejected') { // 如果当前promise已经失败
+        setTimeout(() => {
+          handle(onRejected)
+        }, 0)
+      } else { // 如果当前promise还是未确定
+        self.callbacks.push({
+          onResolved () {
+            handle(onResolved)
+          },
+          onRejected () {
+            handle(onRejected)
+          }
+        })
+      }
+    })
+  }
+
+
   /* 
   用来指定失败回调函数的方法
   */
   Promise.prototype.catch = function (onRejected) {
-    
+    return this.then(null, onRejected)
   }
 
   /* 
-  用来返回一个成功的promise的静态方法
+  用来返回一个成功/失败的promise的静态方法
   */
   Promise.resolve = function (value) {
-
+    return new Promise((resolve, reject) => {
+      if (value instanceof Promise) {
+        value.then(resolve, reject)
+      } else {
+        resolve(value)
+      }
+    })
   }
 
   /* 
   用来返回一个失败的promise的静态方法
   */
   Promise.reject = function (reason) {
-
+    return new Promise((resolve, reject) => {
+      reject(reason)
+    })
   }
 
   /* 

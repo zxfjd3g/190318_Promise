@@ -38,5 +38,5 @@
 ## 3). promise.then()/catch()的实现
 ## 4). Promise.resolve()/reject()的实现
 ## 5). Promise.all/race()的实现
-## 6). Promise.resolveDelay()/rejectDelay()的实现
+## 6). Promise.resolveDelay(value, time)/rejectDelay(reason, time)的实现
 ## 7). 改造成class的实现

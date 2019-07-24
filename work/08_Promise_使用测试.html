@@ -10,7 +10,7 @@
     1. promise的链式调用
     2. 执行顺序问题
    -->
-   
+  <!--  
 <script type="text/javascript">
   new Promise((resolve, reject) => { // 在Promise内部会同步执行executor函数
     resolve(1)
@@ -49,7 +49,7 @@
   then()返回的promise与调用then()方法的promise的结果无关
   */
 </script>
-
+ -->
 
 
 <!--
@@ -59,22 +59,22 @@
   Promise.all()
   Promise.race()
 -->
-<!-- 
+
 <script>
   const p1 = Promise.resolve(3)
-  const p2 = Promise.resolve(Promise.resolve(5))
+  const p2 = Promise.resolve(Promise.reject(5))
   const p3 = Promise.reject(6)
 
-  Promise.all([p1, 'abc', p3, p2]).then(
+  /* Promise.all([p1, 'abc', p3, p2]).then(
     values => {
       console.log('onResolved()', values)
     },
     reason => {
       console.log('onRejected()', reason)
     }
-  )
+  ) */
 </script>
- -->
+
 
  
 <!--
