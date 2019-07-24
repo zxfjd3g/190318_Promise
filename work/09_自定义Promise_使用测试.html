@@ -93,11 +93,26 @@
 
  </script> -->
 
- <script>
-   const p1 = Promise.resolve(3)
-   const p2 = Promise.resolve(Promise.reject(5))
-   const p3 = Promise.reject(6)
-   console.log(p1, p2, p3)
- </script>
+  <script>
+    const p1 = Promise.resolveDelay(4, 200)
+    const p2 = Promise.resolve(Promise.resolve(5))
+    const p3 = Promise.reject(6)
+
+    // Promise.all([p1, p2, 3]).then(values => {
+    Promise.all([p1, p2, 3, p3]).then(values => {
+      console.log(values)
+    }, reason => {
+      console.log(reason)
+    })
+    Promise.race([p1, p3]).then(
+      value => {
+        console.log('成功', value)
+      },
+      reason => {
+        console.log('失败', reason)
+      },
+    )
+
+  </script>
 </body>
 </html>

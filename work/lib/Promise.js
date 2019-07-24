@@ -18,6 +18,12 @@ Promise构造函数模块
       3). 可能需要去执行已保存的待执行成功的回调函数
     */
     function resolve(value) {
+
+      // 如果状态不是pending, 直接结束
+      if (self.status!='pending') {
+        return
+      }
+
       // 1). 指定status改为'resolved'
       self.status = 'resolved'
       // 2). 指定data为value
@@ -40,6 +46,12 @@ Promise构造函数模块
       3).可能需要去执行已保存的待执行失败的回调函数
     */
     function reject(reason) {
+
+      // 如果状态不是pending, 直接结束
+      if (self.status != 'pending') {
+        return
+      }
+
       // 1).指定status改为 'rejected'
       self.status = 'rejected'
       // 2).指定data为reason
@@ -206,11 +218,37 @@ Promise构造函数模块
   }
 
   /* 
+  用来返回一个延迟成功/失败的promise的静态方法
+  */
+  Promise.resolveDelay = function (value, time) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (value instanceof Promise) {
+          value.then(resolve, reject)
+        } else {
+          resolve(value)
+        }
+      }, time);
+    })
+  }
+
+  /* 
   用来返回一个失败的promise的静态方法
   */
   Promise.reject = function (reason) {
     return new Promise((resolve, reject) => {
       reject(reason)
+    })
+  }
+
+  /* 
+  用来返回一个延迟失败的promise的静态方法
+  */
+  Promise.rejectDelay = function (reason, time) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject(reason)
+      }, time)
     })
   }
 
@@ -221,6 +259,26 @@ Promise构造函数模块
   */
   Promise.all = function (promises) {
 
+    const length = promises.length
+    const values = new Array(length) // 创建长度为promises的长度的空数组
+    let resolvedCount = 0 // 成功的数量
+
+    return new Promise((resolve, reject) => {
+      promises.forEach((p, index) => {
+        Promise.resolve(p).then(
+          value => {
+            resolvedCount++ // 完成的数量加1
+            values[index] = value // 将value保存在数组中的对应位置
+            if (resolvedCount===length) { // 如果全部都完成了, 调用resolve让返回的promise成功
+              resolve(values)
+            }
+          },
+          reason => {
+            reject(reason)
+          }
+        )
+      })
+    })
   }
 
   /* 
@@ -228,7 +286,18 @@ Promise构造函数模块
   第一个确定结果的promise来决定返回promise结果
   */
   Promise.race = function (promises) {
-
+    return new Promise ((resolve, reject) => {
+      promises.forEach(p => {
+        Promise.resolve(p).then(
+          value => {
+            resolve(value)
+          },
+          reason => {
+            reject(reason)
+          }
+        )
+      })
+    })
   }
 
 
