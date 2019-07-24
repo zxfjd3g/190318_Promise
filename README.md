@@ -34,7 +34,7 @@
     当异步任务失败/抛出error时, 我们应该调用reject函数, 并传入需要的reason
     reject函数内部: 
         同步修改promise对象的状态为rejected和保存失败reason
-        异步调用已经存储的所有onRejected回调函数
+        异步调用经存储的所已有onRejected回调函数
     
 ## 5). then: 接着
     promise对象的方法: then(onRsolved函数, onRejected函数), 返回值为一个新的promise对象
@@ -64,11 +64,11 @@
     promise对象的方法: catch(onRejected函数)
     是then()的语法糖方法, 相当于: then(null, onRejected函数)
     
-## 9). Promise.resolve()
+## 9). Promise.resolve(value)
     手动创建一个已经resolve的promise的快捷方法: Promise.resolve(value/promise)
     如果参数为promise: 读取此promise结果值作为返回promise的结果值
     
-## 10). Promise.reject()
+## 10). Promise.reject(reason)
     手动创建一个已经reject的promise的快捷方法: Promise.reject(reason)
 
 ## 11). Promise.all([p1, p2, p3])

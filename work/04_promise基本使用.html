@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>04_promise基本使用</title>
+</head>
+<body>
+  
+  <script>
+    // 1. 创建Promise对象
+    const p = new Promise((resolve, reject) => { // 执行器函数(同步回调执行)
+      console.log('excutor()')
+      // 执行异步操作
+      setTimeout(() => {
+        console.log('执行异步任务完成')
+        // 异步操作成功了, 调用resolve()
+        if (Date.now()%2===1) {
+          resolve('成功的数据') // 让promise对象的状态变为resolved, 指定成功的value
+        // 异步操作失败了
+        } else {
+          reject('失败的原因数据') // 让promise对象的状态变为rejected, 指定失败的reason
+        }
+      }, 1000)
+    })
+    console.log('new Promise()之后')
+
+    // 指定promise的成功/失败回调
+    p.then(
+      value => {
+        console.log('接收成功的value数据: ', value)
+      },
+      reason => {
+        console.log('接收失败的reason数据: ', reason)
+      }
+    )
+  </script>
+</body>
+</html>
