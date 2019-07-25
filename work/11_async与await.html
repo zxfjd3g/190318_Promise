@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>11_async与await</title>
+</head>
+<body>
+  <!-- 
+    目标: 进一步掌握asyn/await的语法和使用
+    mdn文档:
+      https: //developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/async_function
+      https: //developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/await
+
+    1. async 函数
+      函数的返回值为promise对象
+      promise对象的结果由async函数执行的返回值决定
+   
+    2. await 表达式
+      await右侧的表达式一般为promise对象, 但也可以是其它的值
+      如果表达式是promise对象, await返回的是promise成功的值, 如果promise失败必须进行try..catch得到失败的结果
+      如果表达式是其它值, 直接将此值作为await的返回值
+      表达式抛出错误, 需要通过try..catch得到error
+
+
+    
+    3. 注意:
+      await必须写在async函数中, 但async函数中可以没有await
+      如果await的promise失败了, 就会抛出异常, 需要通过try...catch来捕获处理
+  -->
+  <script>
+    function fn1() {
+      return 2
+    }
+    async function fn2() {
+      // return 2
+      // throw 3
+      // return Promise.resolve(4)
+      return Promise.reject(4)
+    }
+
+    console.log(fn1())
+    console.log(fn2())
+
+    function fn4() {
+      // return Promise.reject(5)
+      throw 6
+    }
+
+    async function fn3() {
+      // const result = await 3  // await的右侧的表达式的结果可以不是promise, await的结果就是表达式本身的结果
+      try {
+        const result = await fn4() // await的右侧的表达式的结果是promise, await的结果就是promise成功的结果
+        console.log(result)
+      } catch (error) {
+        console.log('失败了', error)
+      }
+      
+    }
+    fn3()
+
+  </script>
+</body>
+</html>

@@ -84,8 +84,9 @@
     Promise.resolve = function (value) {}
     Promise.reject = function (reason) {}
     Promise.all = function (promises) {}
+    Promise.race = function (promises) {}
     
-## 2). Promise函数的实现
+## 2). Promise构造函数的实现
     初始化对象的属性:
         status: 'pending' 对象的状态(resolved/rejected)
         data: undefined  成功/失败的数据
@@ -104,28 +105,49 @@
         立即同步指定成功的数据: data: reason
         立即异步执行callbacks中包含所有待执行onRejected函数
         
-## 3). promise.then()/catch()的实现
+## 3). promise.then(onResolved, onRejected)的实现
     1). 返回一个新的promise对象
-    2). 根据当前promise的状态来处理
+    2). 处理onResolved/onRejected 2个回调函数, 并根据它们执行的结果来指定返回的promise的结果
         1). resolved
             a. 立即异步调用onResolved(p.data)
-            b. 得到onResolved()执行的结果
-            c. 将此结果作为then()返回的promise的结果
+            b. 根据它们执行的结果来指定返回的promise的结果
+                1). 抛出了异常, 返回的promise就失败了, reason是error  reject(error)
+                2). 结果是非promise值, 返回的promise就成功了, value是结果值   resolve(result)
+                3). 结果是promise, 将这个promise的结果直接传递给返回的promise    result.then(resolve, reject)
         2). rejected
             a. 立即异步调用onRejected(p.data)
-            b. 得到onRejected()执行的结果
-            c. 将此结果作为then()返回的promise的结果
+            b. 根据它们执行的结果来指定返回的promise的结果
         3). pending
             a. 将onResolved和onRejected保存到p的callbacks中
-            b. 在onResolved和onRejected中做前面一样的处理
-## 4). Promise.resolve()/rejected()的实现
-    1). 创建一个新的promise对象返回
-    2). 在执行器内通过执行resolve/reject确定promise的状态和结果
+            b. 当回调函数调用时, 根据它们执行的结果来指定返回的promise的结果
 
-## 5). Promise.all(promises)的实现
+## 4). catch()的实现
+    调用then()只指定失败的回调函数: then(null, onRejected)
+
+## 5). Promise.resolve(value/promise)的实现
+    1). 创建一个新的promise对象返回
+    2). 在执行器内
+        如果参数是promise, 将promise的结果传递给返回的promise对象
+        如果参数不是promise, 直接resolve(value)
+
+## 6). Promise.rejected(reason)的实现
+    1). 创建一个新的promise对象返回
+    2). 在执行器内通过执行reject(reason)
+
+## 7). Promise.resolveDelay()与Promise.rejectdelay()的实现
+    在对应的实现上指定延迟指定时间后才去确定返回promise的结果
+
+## 8). Promise.all(promises)的实现
     需求: 一次发多个异步ajax请求, 只有当所有请求都成功, 来进行界面的正常处理, 只要有一个失败, 就直接进行错误
     1). 创建一个新的promise对象并返回
     2). 在执行器内遍历所有promises, 并得到每个promise的结果
     3). 如果有一个结果为失败, 直接reject(reason)
     4). 如果当前promise成功了, 保存value到数组values中对应的位置
     5). 只有当所有promise都成功了, resolve(values)
+
+## 9). Promise.race(promises)的实现
+    需求: 一次发多个异步ajax请求, 只有有一个请求返回了(成功或失败), 后续处理就可以进行了, 其它请求忽略
+    1). 创建一个新的promise对象并返回
+    2). 在执行器内遍历所有promises, 并指定每个promise的onResolved与onRejected
+    3). 如果有一个结果为失败, 直接reject(reason)
+    3). 如果有一个结果为成功, 直接resolve(value)

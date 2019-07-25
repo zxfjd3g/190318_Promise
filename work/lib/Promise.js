@@ -264,6 +264,7 @@ Promise构造函数模块
     let resolvedCount = 0 // 成功的数量
 
     return new Promise((resolve, reject) => {
+
       promises.forEach((p, index) => {
         Promise.resolve(p).then(
           value => {
